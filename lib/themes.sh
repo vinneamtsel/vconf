@@ -174,7 +174,7 @@ select_theme_variant() {
     
     read -p "Select theme variant (1-$((${#THEME_VARIANTS[@]}/2)): " choice
     
-    local max_choice=$((${#THEME_VARIANTS[@]}/2)
+    local max_choice=$((${#THEME_VARIANTS[@]}/2))
     if [[ "$choice" =~ ^[0-9]+$ ]] && [ "$choice" -ge 1 ] && [ "$choice" -le "$max_choice" ]; then
         local index=$(((choice - 1) * 2))
         SELECTED_THEME_VARIANT="${THEME_VARIANTS[$index]}"
@@ -199,7 +199,7 @@ select_color_scheme() {
     
     read -p "Select color scheme (1-$((${#COLOR_SCHEMES[@]}/2)): " choice
     
-    local max_choice=$((${#COLOR_SCHEMES[@]}/2)
+    local max_choice=$((${#COLOR_SCHEMES[@]}/2))
     if [[ "$choice" =~ ^[0-9]+$ ]] && [ "$choice" -ge 1 ] && [ "$choice" -le "$max_choice" ]; then
         local index=$(((choice - 1) * 2))
         SELECTED_COLOR_SCHEME="${COLOR_SCHEMES[$index]}"
@@ -224,7 +224,7 @@ select_size_variant() {
     
     read -p "Select size variant (1-$((${#SIZE_VARIANTS[@]}/2)): " choice
     
-    local max_choice=$((${#SIZE_VARIANTS[@]}/2)
+    local max_choice=$((${#SIZE_VARIANTS[@]}/2))
     if [[ "$choice" =~ ^[0-9]+$ ]] && [ "$choice" -ge 1 ] && [ "$choice" -le "$max_choice" ]; then
         local index=$(((choice - 1) * 2))
         SELECTED_SIZE_VARIANT="${SIZE_VARIANTS[$index]}"
@@ -248,9 +248,9 @@ toggle_tweak() {
     done
     echo ""
     
-    read -p "Select tweak to toggle (1-$((${#TWEAKS[@]}/2), 0 to finish): " choice
+    read -p "Select tweak to toggle (1-$((${#TWEAKS[@]}/2)), 0 to finish): " choice
     
-    if [[ "$choice" =~ ^[0-9]+$ ]] && [ "$choice" -ge 0 ] && [ "$choice" -le $((${#TWEAKS[@]}/2) ]; then
+    if [[ "$choice" =~ ^[0-9]+$ ]] && [ "$choice" -ge 0 ] && [ "$choice" -le $((${#TWEAKS[@]}/2)) ]; then
         if [ "$choice" -eq 0 ]; then
             log_info "Finished toggling tweaks."
             return
@@ -330,20 +330,25 @@ install_colloid_themes() {
         log_info "Theme selections: $SELECTED_THEME_VARIANT, $SELECTED_COLOR_SCHEME, $SELECTED_SIZE_VARIANT, tweaks: $SELECTED_TWEAKS"
     fi
     
-    eval "$install_cmd" || {
-        log_error "Failed to install Colloid GTK theme"
+    # Install with timeout and optional error handling
+    log_info "Installing theme (this may take a few minutes)..."
+    if ! timeout 300 eval "$install_cmd" 2>&1; then
+        log_warn "Theme installation timed out or failed (continuing with setup)"
+        log_info "You can manually install themes later by running: cd '$temp_dir/colloid-gtk-theme' && $install_cmd"
         cd "$repo_dir"
-        return 1
-    }
+        rm -rf "$temp_dir"
+        return 0  # Continue installation even if theme fails
+    fi
 
     # Install icon theme
     cd "$temp_dir/colloid-icon-theme"
     log_info "Installing Colloid icon theme..."
-    ./install.sh || {
-        log_error "Failed to install Colloid icon theme"
-        cd "$repo_dir"
-        return 1
-    }
+    if ! timeout 120 ./install.sh 2>&1; then
+        log_warn "Icon theme installation timed out or failed (continuing with setup)"
+        log_info "You can manually install icons later by running: cd '$temp_dir/colloid-icon-theme' && ./install.sh"
+    else
+        log_success "Colloid icon theme installed successfully"
+    fi
 
     # Cleanup
     cd "$repo_dir"

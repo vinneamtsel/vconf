@@ -58,7 +58,7 @@ select_optional_apps() {
     echo ""
     echo "1) Zen Browser (privacy-focused browser)"
     echo "2) Zed (modern code editor)"
-    echo "3) Helix (modal text editor)"
+    echo "3) Helium Browser (lightweight browser)"
     echo ""
 
     read -p "Enter your choices (e.g., '1 3' or just Enter to skip): " choices
@@ -68,7 +68,7 @@ select_optional_apps() {
         case $choice in
             1) OPTIONAL_APPS+=("zen-browser-bin") ;;
             2) OPTIONAL_APPS+=("zed") ;;
-            3) OPTIONAL_APPS+=("helix") ;;
+            3) OPTIONAL_APPS+=("helium-browser-bin") ;;
             *) log_warn "Invalid choice '$choice' ignored" ;;
         esac
     done

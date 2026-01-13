@@ -70,10 +70,27 @@ install_package_list() {
         # Install AUR packages one by one to handle conflicts better
         for pkg in "${aur_packages[@]}"; do
             log_info "Installing AUR package: $pkg"
-            yes | "${AUR_HELPER}" -S --needed "${pkg}"
+            # Install AUR package with automatic answers for build menus
+            case "${AUR_HELPER}" in
+                yay)
+                    "${AUR_HELPER}" -S --needed --answerclean None --answerdiff None --answeredit None --noconfirm "${pkg}"
+                    ;;
+                paru)
+                    "${AUR_HELPER}" -S --needed --noconfirm "${pkg}"
+                    ;;
+                *)
+                    yes | "${AUR_HELPER}" -S --needed "${pkg}"
+                    ;;
+            esac
             if [ $? -ne 0 ]; then
                 log_warn "Failed to install $pkg"
                 failed_packages+=("$pkg")
+                # Special handling for problematic packages
+                if [ "$pkg" = "sway-audio-idle-inhibit-git" ]; then
+                    log_info "Note: sway-audio-idle-inhibit-git often fails to build"
+                    log_info "You can manually install it later with: yay -S sway-audio-idle-inhibit-git"
+                    log_info "Alternative: Add 'exec swayidle -w timeout 300 \"$lockcmd\"' to your config"
+                fi
             else
                 log_success "$pkg installed"
             fi
@@ -137,7 +154,18 @@ install_optional_apps() {
 
     for app in "${apps[@]}"; do
         log_info "Installing $app..."
-        $AUR_HELPER -S --needed --noconfirm "$app"
+        # Install optional app with automatic answers for build menus
+        case "${AUR_HELPER}" in
+            yay)
+                "${AUR_HELPER}" -S --needed --answerclean None --answerdiff None --answeredit None --noconfirm "$app"
+                ;;
+            paru)
+                "${AUR_HELPER}" -S --needed --noconfirm "$app"
+                ;;
+            *)
+                "${AUR_HELPER}" -S --needed --noconfirm "$app"
+                ;;
+        esac
         if [ $? -eq 0 ]; then
             log_success "$app installed"
         else
