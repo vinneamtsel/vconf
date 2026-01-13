@@ -227,10 +227,10 @@ update_banner() {
         cat << 'EOF'
  ╔════════════════════════════════════════╗
  ║                                              ║
- ║          BD-CONFIGS INSTALLER           ║
+  ║       BD-CONFIGS INSTALLER        ║
  ║                                              ║
- ║    Beautiful Dots for Niri               ║
- ║     with Colloid Themes & ReGreet        ║
+  ║      Beautiful Dots for Niri        ║
+  ║   with Colloid Themes & ReGreet     ║
  ║                                              ║
  ╚══════════════════════════════════════╝
 EOF
