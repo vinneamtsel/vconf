@@ -73,7 +73,7 @@ install_package_list() {
             # Install AUR package with automatic answers for build menus
             case "${AUR_HELPER}" in
                 yay)
-                    "${AUR_HELPER}" -S --needed --answerclean None --answerdiff None --answeredit None --noconfirm "${pkg}"
+                    "${AUR_HELPER}" -S --needed --noconfirm "${pkg}"
                     ;;
                 paru)
                     "${AUR_HELPER}" -S --needed --noconfirm "${pkg}"
@@ -157,7 +157,7 @@ install_optional_apps() {
         # Install optional app with automatic answers for build menus
         case "${AUR_HELPER}" in
             yay)
-                "${AUR_HELPER}" -S --needed --answerclean None --answerdiff None --answeredit None --noconfirm "$app"
+                "${AUR_HELPER}" -S --needed --noconfirm "$app"
                 ;;
             paru)
                 "${AUR_HELPER}" -S --needed --noconfirm "$app"
