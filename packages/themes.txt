@@ -1,0 +1,12 @@
+qt5-wayland
+qt6-wayland
+qt5ct
+qt6ct
+gtk3
+gtk4
+colloid-gtk-theme-git
+colloid-icon-theme-git
+bibata-cursor-theme-bin
+gtk-engine-murrine
+gnome-themes-extra
+sassc
